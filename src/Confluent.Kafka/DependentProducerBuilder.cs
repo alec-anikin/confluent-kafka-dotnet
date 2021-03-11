@@ -27,6 +27,39 @@ namespace Confluent.Kafka
     ///     [API-SUBJECT-TO-CHANGE] - This class may be removed in the future
     ///     in favor of an improved API for this functionality.
     /// </summary>
+    public class DependentProducerBuilder
+    {
+        /// <summary>
+        ///     The configured client handle.
+        /// </summary>
+        public Handle Handle { get; set; }
+
+        /// <summary>
+        ///     An underlying librdkafka client handle that the Producer will use to 
+        ///     make broker requests. The handle must be from another Producer
+        ///     instance (not Consumer or AdminClient).
+        /// </summary>
+        public DependentProducerBuilder(Handle handle)
+        {
+            this.Handle = handle;
+        }
+
+        /// <summary>
+        ///     Build a new IProducer implementation instance.
+        /// </summary>
+        public virtual IProducer Build()
+        {
+            return new Producer(this);
+        }
+    }
+
+    /// <summary>
+    ///     A builder class for <see cref="IProducer{TKey, TValue}" /> instance
+    ///     implementations that leverage an existing client handle.
+    ///
+    ///     [API-SUBJECT-TO-CHANGE] - This class may be removed in the future
+    ///     in favor of an improved API for this functionality.
+    /// </summary>
     public class DependentProducerBuilder<TKey, TValue>
     {
         /// <summary>

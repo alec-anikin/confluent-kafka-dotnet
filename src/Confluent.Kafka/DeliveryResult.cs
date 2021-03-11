@@ -20,6 +20,55 @@ namespace Confluent.Kafka
     /// <summary>
     ///     Encapsulates the result of a successful produce request.
     /// </summary>
+    public class DeliveryResult
+    {
+        /// <summary>
+        ///     The topic associated with the message.
+        /// </summary>
+        public string Topic { get; set; }
+
+        /// <summary>
+        ///     The partition associated with the message.
+        /// </summary>
+        public Partition Partition { get; set; }
+
+        /// <summary>
+        ///     The partition offset associated with the message.
+        /// </summary>
+        public Offset Offset { get; set; }
+
+        /// <summary>
+        ///     The TopicPartition associated with the message.
+        /// </summary>
+        public TopicPartition TopicPartition
+            => new TopicPartition(Topic, Partition);
+
+        /// <summary>
+        ///     The TopicPartitionOffset associated with the message.
+        /// </summary>
+        public TopicPartitionOffset TopicPartitionOffset
+        {
+            get
+            {
+                return new TopicPartitionOffset(Topic, Partition, Offset);
+            }
+            set
+            {
+                Topic = value.Topic;
+                Partition = value.Partition;
+                Offset = value.Offset;
+            }
+        }
+
+        /// <summary>
+        ///     The persistence status of the message
+        /// </summary>
+        public PersistenceStatus Status { get; set; }
+    }
+
+    /// <summary>
+    ///     Encapsulates the result of a successful produce request.
+    /// </summary>
     public class DeliveryResult<TKey, TValue>
     {
         /// <summary>
