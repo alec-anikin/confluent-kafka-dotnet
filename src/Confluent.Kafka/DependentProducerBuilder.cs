@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace Confluent.Kafka
 {
     /// <summary>
-    ///     A builder class for <see cref="IProducer{TKey, TValue}" /> instance
+    ///     A builder class for <see cref="IProducer" /> instance
     ///     implementations that leverage an existing client handle.
     ///
     ///     [API-SUBJECT-TO-CHANGE] - This class may be removed in the future
@@ -60,13 +60,8 @@ namespace Confluent.Kafka
     ///     [API-SUBJECT-TO-CHANGE] - This class may be removed in the future
     ///     in favor of an improved API for this functionality.
     /// </summary>
-    public class DependentProducerBuilder<TKey, TValue>
+    public class DependentProducerBuilder<TKey, TValue> : DependentProducerBuilder
     {
-        /// <summary>
-        ///     The configured client handle.
-        /// </summary>
-        public Handle Handle { get; set; }
-        
         /// <summary>
         ///     The configured key serializer.
         /// </summary>
@@ -93,9 +88,8 @@ namespace Confluent.Kafka
         ///     make broker requests. The handle must be from another Producer
         ///     instance (not Consumer or AdminClient).
         /// </summary>
-        public DependentProducerBuilder(Handle handle)
+        public DependentProducerBuilder(Handle handle) : base(handle)
         {
-            this.Handle = handle;
         }
 
         /// <summary>
@@ -137,7 +131,7 @@ namespace Confluent.Kafka
         /// <summary>
         ///     Build a new IProducer implementation instance.
         /// </summary>
-        public virtual IProducer<TKey, TValue> Build()
+        public new virtual IProducer<TKey, TValue> Build()
         {
             return new Producer<TKey, TValue>(this);
         }

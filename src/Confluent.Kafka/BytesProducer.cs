@@ -48,8 +48,6 @@ namespace Confluent.Kafka
 
         private bool manualPoll = false;
         private bool enableDeliveryReports = true;
-        private bool enableDeliveryReportKey = true;
-        private bool enableDeliveryReportValue = true;
         private bool enableDeliveryReportTimestamp = true;
         private bool enableDeliveryReportHeaders = true;
         private bool enableDeliveryReportPersistedStatus = true;
@@ -261,7 +259,7 @@ namespace Confluent.Kafka
             }
         }
 
-        private void ProduceImpl(
+        internal void ProduceImpl(
             string topic,
             ReadOnlySpan<byte> val,
             ReadOnlySpan<byte> key,
@@ -492,6 +490,17 @@ namespace Confluent.Kafka
         internal Producer(ProducerBuilder builder)
         {
             var baseConfig = builder.ConstructBaseConfig(this);
+
+            InitializeProducer(baseConfig);
+        }
+
+        internal Producer(Config baseConfig)
+        {
+            InitializeProducer(baseConfig);
+        }
+
+        private void InitializeProducer(Config baseConfig)
+        {
             var partitioners = baseConfig.partitioners;
             var defaultPartitioner = baseConfig.defaultPartitioner;
 
@@ -545,8 +554,6 @@ namespace Confluent.Kafka
                 var fields = deliveryReportEnabledFieldsObj.Replace(" ", "");
                 if (fields != "all")
                 {
-                    this.enableDeliveryReportKey = false;
-                    this.enableDeliveryReportValue = false;
                     this.enableDeliveryReportHeaders = false;
                     this.enableDeliveryReportTimestamp = false;
                     this.enableDeliveryReportPersistedStatus = false;
@@ -557,14 +564,14 @@ namespace Confluent.Kafka
                         {
                             switch (part)
                             {
-                                case "key": this.enableDeliveryReportKey = true; break;
-                                case "value": this.enableDeliveryReportValue = true; break;
+
+                                //TODO: key value
                                 case "timestamp": this.enableDeliveryReportTimestamp = true; break;
                                 case "headers": this.enableDeliveryReportHeaders = true; break;
                                 case "status": this.enableDeliveryReportPersistedStatus = true; break;
                                 default:
                                     throw new ArgumentException(
-                               $"Unknown delivery report field name '{part}' in config value '{ConfigPropertyNames.Producer.DeliveryReportFields}'.");
+                                        $"Unknown delivery report field name '{part}' in config value '{ConfigPropertyNames.Producer.DeliveryReportFields}'.");
                             }
                         }
                     }
